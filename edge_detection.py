@@ -88,11 +88,10 @@ def apply_prewitt_edge_detector(image, _):
     PIL.Image: The edge-detected image.
     """
     gray_image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2GRAY)
-    prewitt_x = cv2.Sobel(gray_image, cv2.CV_64F, 1, 0, ksize=3)
-    prewitt_y = cv2.Sobel(gray_image, cv2.CV_64F, 0, 1, ksize=3)
-    prewitt_image = np.sqrt(prewitt_x**2 + prewitt_y**2)
-    prewitt_image = cv2.normalize(prewitt_image, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-    return Image.fromarray(prewitt_image)
+    prewitt_x = cv2.filter2D(gray_image, -1, np.array([[-1, 0, 1], [-1, 0, 1], [-1, 0, 1]]))
+    prewitt_y = cv2.filter2D(gray_image, -1, np.array([[-1, -1, -1], [0, 0, 0], [1, 1, 1]]))
+    prewitt_edges = cv2.addWeighted(prewitt_x, 0.5, prewitt_y, 0.5, 0)
+    return Image.fromarray(prewitt_edges)
 
 def apply_sobel_edge_detector(image, _):
     """
